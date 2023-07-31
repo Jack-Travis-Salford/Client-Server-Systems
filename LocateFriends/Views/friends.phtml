@@ -1,0 +1,150 @@
+<?php require_once("Template/header.phtml"); //Gets header?>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script> <!--Script & external stylesheet required for map -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+
+
+<?php require_once("Template/header_content.phtml");?>
+
+    <!-- Main content here -->
+<?php    if(!isset($_SESSION['uID'])) { ?>
+    <h2>Please login to use this page</h2>
+<?php  }
+else {  ?>
+    <h1>Your Friends</h1>
+    <div id="map_holder" class="">
+        <div id='map' ></div>
+        <div id="menu"> <!-- Menu to change map appearance -->
+            <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" checked="checked">
+            <!-- See a list of Mapbox-hosted public styles at -->
+            <!-- https://docs.mapbox.com/api/maps/styles/#mapbox-styles -->
+            <label for="satellite-v9">satellite</label>
+            <input id="streets-v11" type="radio" name="rtoggle" value="streets">
+            <label for="streets-v11">streets</label>
+            <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors">
+            <label for="outdoors-v11">outdoors</label>
+        </div>
+    </div>
+
+    <script>
+        class MarkerData{ //Holds a map marker, along with its corresponding popup and div
+            popup;
+            marker;
+            div;
+            constructor(marker,popup, div) {
+                this.popup = popup
+                this.marker = marker
+                this.div = div
+            }
+            remMarker(){
+                this.popup.remove();
+                this.marker.remove();
+                this.div.remove();
+            }
+        }
+        class MapClass{
+            static markerData;
+            static map;
+            constructor() {
+                MapClass.markerData = new Map();
+                mapboxgl.accessToken = '---'; //Access token
+                MapClass.map = new mapboxgl.Map({ //Defines info about the map
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/satellite-v9',
+                    center: [-96, 37.8],
+                    zoom: 0
+                });
+                const layerList = document.getElementById('menu'); //Provides ability to change appearance of map
+                const inputs = layerList.getElementsByTagName('input');
+                for (const input of inputs) {
+                    input.onclick = (layer) => {
+                        const layerId = layer.target.id;
+                        MapClass.map.setStyle('mapbox://styles/mapbox/' + layerId);
+                    };
+                }
+                MapClass.map.addControl(new mapboxgl.FullscreenControl()); //Adds fullscreen option
+                MapClass.map.addControl( //Adds 'locate user' button/functionality
+                    new mapboxgl.GeolocateControl({
+                        positionOptions: {
+                            enableHighAccuracy: true
+                        },
+                        trackUserLocation: true,// When active the map will receive updates to the device's location as it changes.
+                        showUserHeading: true// Draw an arrow next to the location dot to indicate which direction the device is heading.
+                    })
+                );
+                MapClass.map.addControl(new mapboxgl.NavigationControl()); //Adds navigational controls (zoom and point north)
+                MapClass.map.on('load', function() { //When the map loads, resize it to correct size
+                    MapClass.map.resize()
+                    MapClass.addFriends(); //Initial call to add friends (superseded by setInterval)
+                });
+            }
+            static addFriends(){
+            fetch('map_data.php').then(function(response) //Fetch upto first 10 matches, then...
+            {
+                return response.text();
+            }).then(function (data) {
+                MapClass.addUsers(data);
+
+            }).catch(function(error)
+                { console.log('Error: ' + error.stack); }
+            ).then(function (){
+                setTimeout(MapClass.addFriends, 5000); //Once all friends are added, code is rerun. Prevents slow/computationally busy devices from falling behind (if function was called every 5 seconds, but  device
+                // take 6 seconds to execute, device will constantly be falling behind
+                });
+            }
+            static addUsers(data) {
+                data = JSON.parse(data);
+                let returnedUsers = new Set();
+                for (let x = 0; x < data.length; x++) { //For however many friends returned
+                    returnedUsers.add(data[x].userID); //Add to set of users added to map
+                    if (MapClass.markerData.has(data[x].userID)){ //If user already has a pointer
+                        let markerData = MapClass.markerData.get(data[x].userID);  //Get the MarkerData
+                        markerData.marker.setLngLat([data[x].longitude, data[x].latitude]); //Move marker to new location
+                    }else{
+                        let newDiv = document.createElement('div'); //Create a new div
+                        newDiv.className = 'marker'; //Set class name, so mapbox can use it
+                        let img = 'images/' + data[x].userID + '.png'; //Sets location of users image (if it were to exist)
+                        if (MapClass.imageExists(img) === true) { //Calls function to see if image exists. If it does, do...
+                            newDiv.style.backgroundImage = 'url(' + img + ')';
+                        } else { //If it doesn't exist, do...
+                            newDiv.style.backgroundImage = 'url(images/Img-Placeholder.png)';
+                        }
+                        let newPopup =  new mapboxgl.Popup({offset: 25}) //Create a popup
+                                                .setHTML('<h2>'+data[x].username+'</h2><a href="user.php?selectedID='+data[x].userID+'">'+data[x].first_name +' '+ data[x].surname+'</a>') //Text contained within popup
+
+                        let newMarker = new mapboxgl.Marker(newDiv) //Create a marked, to be added to newDiv
+                            .setLngLat([data[x].longitude, data[x].latitude]) //Set co ordinates
+                            .setPopup(newPopup) //Set marker to the one just created
+                            .addTo(MapClass.map); //Add to map
+                        let markerInfo = new MarkerData(newMarker,newPopup,newDiv); //Create a MarkerData for this marker
+                        MapClass.markerData.set(data[x].userID, markerInfo); //Add to map class
+                    }
+                }
+                for(const key of MapClass.markerData.keys()){
+                    if (!returnedUsers.has(key)){
+                        MapClass.markerData.get(key).remMarker();
+                        MapClass.markerData.delete(key);
+                    }
+                }
+            }
+            static imageExists(image_url){ //Passed image.
+                var http = new XMLHttpRequest();
+                http.open('HEAD', image_url, false); //Attempts to get image.
+                http.send();
+                return http.status !== 404; //If image found, return true. Else, return false
+
+            }
+        }
+        new MapClass();
+    </script>
+    <br>
+
+
+    <?php require_once("Views/basic_user_info.phtml") ?> <!--Pulls 25 users, showing basic user info-->
+
+    <?php require_once ("Views/user_results_nav.phtml") ?> <!-- Provides navigation buttons -->
+
+
+<?php } ?>
+
+
+<?php require_once ("Template/footer.phtml"); //Gets footer ?>

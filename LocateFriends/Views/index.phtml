@@ -1,0 +1,27 @@
+<?php require_once("Template/header.phtml"); //Gets header
+require_once("Template/header_content.phtml");?>
+<!-- Main content here -->
+<?php if(!isset($_SESSION["username"])) { ?> <!-- If user isn't logged in-->
+<h1 class="first_msg"> Welcome to Find Friends! </h1> <!--Give description of site -->
+<h2 class="second_msg">This website allows you to geolocate all your friends. All you've got to do is:</h2>
+<ol>
+    <li>Create an account.</li>
+    <li>Find your friends .</li>
+    <li>Send them a friend request.</li>
+    <li>Once they accept, you can see where they are!</li>
+</ol>
+<?php } else { ?>
+<h1 class="first_msg">Welcome <?php echo $_SESSION["username"] ?>!</h1> <!--Else, welcome the user -->
+    <h2 class="second_msg">To change your profile image, please go to 'Your Profile'</h2>
+<?php } ?>
+<!--Displays some users -->
+<h2 class="centerText">Users registered</h2>
+<?php require_once("Views/basic_user_info.phtml") ?> <!--Pulls 25 users, showing basic user info-->
+
+<?php require_once ("Views/user_results_nav.phtml") ?> <!-- Provides navigation buttons -->
+
+
+<?php require_once ("Template/footer.phtml"); //Gets footer ?>
+
+
+

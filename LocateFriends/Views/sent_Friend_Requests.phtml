@@ -1,0 +1,15 @@
+<?php require_once("Template/header.phtml"); //Gets header
+require_once("Template/header_content.phtml");?>
+    <!-- Main content here -->
+
+<?php    if(!isset($_SESSION['uID'])) { ?>
+    <h2>Please login to use this page</h2>
+<?php  }
+else {  ?>
+    <h1 class="first_msg">Sent Friend Requests</h1>
+    <?php require_once("Views/basic_user_info.phtml") ?> <!--Pulls 25 users, showing basic user info-->
+
+    <?php require_once ("Views/user_results_nav.phtml") ?> <!-- Provides navigation buttons -->
+<?php } ?>
+
+<?php require_once ("Template/footer.phtml"); //Gets footer ?

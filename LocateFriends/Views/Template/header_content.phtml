@@ -1,0 +1,138 @@
+</head> <!-- Continuation of header.phtml. Header.phtm must be loaded first, followed by specific sytlesheets (if necessary) -->
+<body>
+<div class="container-xxl"> <!--Creates a container for the page content that will span across the users screen-->
+    <div class="row" id="header"> <!-- First row of page -->
+        <!-- Header div - Will always span across container-->
+ <div class="" id="header-row">
+     <div id="logo_div" class="col-1">
+            <img src="images/logo.png" width="30" height="30" alt="Logo.png" id="web_img"> <!--Website image - Top left of screen -->
+            </div>
+            <div class="col-9 col-md-10 " id="div-search">
+            <form autocomplete="off" action="search.php" method="post"> <!--Form with no action CHANGE-->
+                <div class="searchResults" >
+                    <input id="searchBar" type="search" name="searchCriteria" value="<?php if(isset($_POST['searchCriteria'])) { //Adds user search in search box
+                        echo $_POST['searchCriteria']; } ?>">
+                    <div id="searchResultList" class="searchResults-items"></div>
+                </div>
+                <input type="submit" id="search" name="search" value="Search">
+            </form>
+            </div>
+            <script src="js/live_Search.js"></script>
+            <script>
+                document.getElementById("web_img").addEventListener("click", function (e){
+                    window.location.href = "index.php";
+                });
+            </script>
+            <?php if(isset($_SESSION['username'])) { ?>
+                <div class="col-2 col-md-1" id="div-logout"> <!--Logs out user when clicked Only visible if user is logged in -->
+                    <form action="logout.php" method="get" > <!-- Form for settings -->
+                        <input type="submit" id="logout" name="logout" value="Log Out">
+                    </form>
+                </div>
+            <?php } ?>
+        </div>
+    </div> <!--Header div closed -->
+    <div class="row" id="main_Content"> <!--Second div, holds the main body of the application -->
+        <div class="col-md-3" id="side_bar"> <!--Side bar -->
+            <?php if(!isset($_SESSION['username'])) { ?>
+                <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" id="login_form"> <!-- Login form for side bar. Only visible if users screen is large enough. -->
+                    <label for="username">Username</label>
+                    <br>
+                    <input type="text" id="username" name="username" required="required" class="sb_input"> <!--Gets users username. Client side validation: User required to fill in before submitting -->
+                    <br>
+                    <label for="pass">Password</label>
+                    <br>
+                    <input type="password" id="pass" name="pass" required="required" class="sb_input"> <!--Gets users password. Type 'pass' so input is hidden Client side validation: User required to fill in before submitting-->
+                    <br>
+                    <input type="checkbox" id="remember" name="remember"> <!--Checkbox for if user would like to be remembered (set a cookie) -->
+                    <label for="remember" class="checkbox_label">Remember Me</label>
+                    <br>
+                    <br>
+                    <!--Basic captcha. Add actual captcha?-->
+                    <input type="checkbox" id="not_a_robot" name="not_a_robot">
+                    <label for="not_a_robot" class="checkbox_label">Are you are human?</label>
+                    <br>
+                    <input type="submit" id="login" name="login" value="Log In"> <!--Submit login details -->
+                    <br>
+                    <?php if(isset($_POST['selectedID'])) { ?>
+                    <input type="text" hidden="hidden" name="selectedID" value="<?php echo $_POST['selectedID']; ?>">
+                    <?php } ?>
+                </form>
+                <?php if(isset($_POST['username'])) { //If user made a login request
+                    if(!isset($_POST['not_a_robot'])) { ?> <!-- If user didn't check the 'I am human' box -->
+                        <p class="sb_err_msg">Please confirm you are not a robot</p><br> <!-- Display error message -->
+                    <?php } else { ?> <!-- If that wasn't the reason for failed logging in, then -->
+                        <p class="sb_err_msg"> Username or password is incorrect</p><br> <!-- Username or password was wrong -->
+                    <?php }} ?>
+                <br>
+                <button type="button" id="go_to_create_account">Or Click Here to create an account</button> <!--Hyperlink to page where user can create an account-->
+
+                <br>
+                <br>
+            <?php } ?>
+
+            <div class="sb_nav_holder">
+              <div class="sb_nav sb_top" id="div_to_home"><p class="sb_nav_text">Home</p></div> <!--Sidebar navigation to allow user to go to page of interest-->
+            <?php if(isset($_SESSION['uID'])) { ?> <!--Only visible if user is logged in -->
+                    <div class="sb_nav" id="div_to_pfp"><p class="sb_nav_text">Your Profile</p></div> <!--Sidebar navigation to allow user to go to page of interest-->
+                    <div class="sb_nav" id="div_to_friends"><p class="sb_nav_text">Friends</p></div>
+                    <div class="sb_nav" id="div_to_frnd_req"><p class="sb_nav_text">Friend Requests</p></div>
+                    <div class="sb_nav" id="div_to_sent_frnd_req"><p class="sb_nav_text">Sent Friend Requests</p></div>
+                    <div class="sb_nav" id="div_to_adv_search"><p class="sb_nav_text">Advanced Search</p></div>
+
+                <script> //Updates database with users location
+                    var geoOptions = {
+                        enableHighAccuracy: true
+                    }
+                    updateUserLocation();
+                    function updateUserLocation() {
+                        navigator.geolocation.getCurrentPosition((position) => { //Get location with high accuracy (if browser allows request) and save to database (if values changed
+                            uLong = position.coords.longitude;
+                            uLat = position.coords.latitude;
+                            fetch("locUpdater.php?uLong="+uLong+"&uLat=" + uLat).catch(function(error) //Call php script that deals with location data
+                            { console.log('Error: ' + error); });
+
+                        },null,geoOptions);
+                        setTimeout(updateUserLocation,4000); //Wait 4 seconds, recall function
+                    }
+                </script>
+            <?php } ?>
+            </div>
+
+            <?php if(!isset($_SESSION['uID'])){?>
+            <script> //Script if user isn't logged in. Event listeners for buttons
+            document.getElementById("go_to_create_account").addEventListener("click",function (e){
+                    window.location.href = "create_account.php";
+                });
+              </script>
+
+            <?php }elseif(isset($_SESSION['uID'])){ ?>
+                <script> //Button event handlers - Where button is only present for logged in user
+                    document.getElementById("div_to_pfp").addEventListener("click", function (e){
+                        window.location.href = "user.php?selectedID=<?php echo $_SESSION['uID'] ?>";
+                    });
+                    document.getElementById("div_to_friends").addEventListener("click", function (e){
+                        window.location.href = "friends.php";
+                    });
+                    document.getElementById("div_to_frnd_req").addEventListener("click", function (e){
+                        window.location.href = "friend_Requests.php";
+                    });
+                    document.getElementById("div_to_sent_frnd_req").addEventListener("click", function (e){
+                        window.location.href = "sent_Friend_Requests.php";
+                    });
+                    document.getElementById("div_to_adv_search").addEventListener("click", function (e){
+                        window.location.href = "advSearch.php";
+                    });
+
+                </script>
+            <?php } ?>
+            <script> //Button event handlers- Present regardless of if user is logged in
+                document.getElementById("div_to_home").addEventListener("click", function (e){
+                   window.location.href = "index.php";
+                });
+            </script>
+        </div>
+        <div id="content" class="col-md-9"> <!--Main content goes here-->
+<?php if(!isset($_SESSION['uID'])) {
+    require_once('Views/small_screen_login.phtml');
+} ?>

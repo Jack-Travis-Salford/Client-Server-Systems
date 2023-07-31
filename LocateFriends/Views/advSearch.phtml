@@ -1,0 +1,77 @@
+<?php require_once("Template/header.phtml"); //Gets header
+require_once("Template/header_content.phtml");?>
+
+<!-- Main content here -->
+<h1 class="first_msg">Advanced Search</h1>
+    <h2 class="second_msg">Fill in as many/little of these sections as desired</h2>
+<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" id="adv-search">
+    <label for="userID">UserID: </label> <!--User ID refine -->
+    <input type="text" name="userID" id="userID">
+    <label for="userLike">like </label>
+    <input type="radio" name="userIDChoice" id="userLike" value="like" checked>
+    <label for="userEqual">equal </label>
+    <input type="radio" name="userIDChoice" id="userEqual" value="equal" >
+    <br>
+    <label for="username">Username: </label> <!--User ID refine -->
+    <input type="text" name="username" id="username">
+    <label for="usernameLike">like </label>
+    <input type="radio" name="usernameIDChoice" id="usernameLike" value="like" checked >
+    <label for="userEqual">equal </label>
+    <input type="radio" name="usernameIDChoice" id="usernameEqual" value="equal">
+    <br>
+    <label for="first_name">First Name: </label> <!--First name refine -->
+    <input type="text" name="first_name" id="first_name">
+    <label for="first_nameLike">like </label>
+    <input type="radio" name="first_nameIDChoice" id="first_nameLike" value="like" checked>
+    <label for="first_nameEqual">equal </label>
+    <input type="radio" name="first_nameIDChoice" id="first_nameEqual" value="equal" >
+    <br>
+    <label for="surname">Surname: </label> <!-- Surname refine -->
+    <input type="text" name="surname" id="surname">
+    <label for="surnameLike">like </label>
+    <input type="radio" name="surnameIDChoice" id="surnameLike" value="like" checked>
+    <label for="surnameEqual">equal </label>
+    <input type="radio" name="surnameIDChoice" id="surnameEqual" value="equal" >
+    <br>
+    <label for="country">Country: </label> <!-- Country refine -->
+    <input type="text" name="country" id="country">
+    <label for="countryLike">like </label>
+    <input type="radio" name="countryIDChoice" id="countryLike" value="like" checked>
+    <label for="countryEqual">equal </label>
+    <input type="radio" name="countryIDChoice" id="countryEqual" value="equal" >
+    <br>
+    <label for="email">Email: </label> <!-- Email refine -->
+    <input type="text" name="email" id="email">
+    <label for="emailLike">like </label>
+    <input type="radio" name="emailIDChoice" id="emailLike" value="like" checked>
+    <label for="emailEqual">equal </label>
+    <input type="radio" name="emailIDChoice" id="emailEqual" value="equal" >
+    <br>
+    <label for="sortBy">Sort by:</label>
+    <label for="sbUserID">UserID </label>
+    <input type="radio" name="sortBy" id="sbUserID" value="userID" >
+    <label for="sbUsername">Username </label>
+    <input type="radio" name="sortBy" id="sbUsername" value="username" checked>
+    <label for="sbFirst_Name">First Name </label>
+    <input type="radio" name="sortBy" id="sbFirst_Name" value="firstName">
+    <label for="sbSurname">Surname </label>
+    <input type="radio" name="sortBy" id="sbSurname" value="surname" >
+    <br>
+    <label for="order">Order:</label>
+    <label for="asc">Ascending</label>
+    <input type="radio" name="order" id="asc" value="Asc" checked>
+    <label for="desc">Descending</label>
+    <input type="radio" name="order" id="desc" value="Desc">
+    <br>
+    <input type="submit" name="submitSearch" id="submitSearch" value="Search">
+
+</form>
+
+<?php if(isset($_POST['order'])) { ?>
+    <h2>Results</h2>
+<?php require_once("Views/basic_user_info.phtml") ?> <!--Pulls 25 users, showing basic user info-->
+
+<?php require_once ("Views/user_results_nav.phtml") ?> <!-- Provides navigation buttons -->
+<?php } ?>
+
+<?php require_once ("Template/footer.phtml"); //Gets footer ?>

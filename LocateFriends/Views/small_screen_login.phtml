@@ -1,0 +1,33 @@
+<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" id="login_form_small_screen"> <!-- Login form for sidebar. Only visible if users screen is large enough. -->
+    <label for="username">Username</label>
+    <br>
+    <input type="text" id="username" name="username" required="required"> <!--Gets users username. Client side validation: User required to fill in before submitting -->
+    <br>
+    <label for="pass">Password</label>
+    <br>
+    <input type="password" id="pass" name="pass" required="required"> <!--Gets users password. Type 'pass' so input is hidden Client side validation: User required to fill in before submitting-->
+    <br>
+    <input type="checkbox" id="remember" name="remember"> <!--Checkbox for if user would like to be remembered (set a cookie) -->
+    <label for="remember">Remember Me</label>
+    <br>
+    <br>
+    <!--Basic captcha. Add actual captcha?-->
+    <input type="checkbox" id="not_a_robot" name="not_a_robot">
+    <input type="text" id="small_Login" name="small_Login" hidden="hidden"> <!--Hidden field so it doesn't disappear upon failed login -->
+    <label for="not_a_robot">Check this box to prove you are human</label>
+    <br>
+
+    <input type="submit" id="login" name="login" value="Log In"> <!--Submit login details -->
+</form>
+
+<button type="button" id="sml_go_to_create_account">Or Click Here to create an account</button> <!--Hyperlink to page where user can create an account-->
+<?php if(!isset($_SESSION['uID'])){?>
+<script> //Script if user isn't logged in. Event listeners for buttons
+    document.getElementById("sml_go_to_create_account").addEventListener("click",function (e){
+        window.location.href = "create_account.php";
+    });
+    <?php } ?>
+</script>
+
+
+<br><br>

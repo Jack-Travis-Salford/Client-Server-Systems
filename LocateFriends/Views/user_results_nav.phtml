@@ -1,0 +1,39 @@
+<div>
+
+    <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" class="centerText"> <!-- Provide page navigations so user can load desired page-->
+
+        <?php if($view->Calculate_pages->isPrevPage() == true) { ?> <!--If user isn't on page 1-->
+            <input type="submit" value="First" id="first" name="first">
+            <input type="submit" value="Previous" id="prev" name="prev">
+        <?php }
+        if($view->Calculate_pages->isNextPage() == true) {?> <!--If user isn't on the last page-->
+            <input type="submit" value="Next" id="next" name="next">
+            <input type="submit" value="Last" id="last" name="last">
+        <?php }
+        if(isset($_POST['searchCriteria'])) { ?> <!--Allows code to be reused for search -->
+            <input type="text" value="<?php echo $_POST['searchCriteria'] ?>" id="searchCriteria" name="searchCriteria" hidden="hidden">
+        <?php }
+        if(isset($_POST['order'])) { ?> <!--Allows code to be reused for adv search-->
+            <input type="text" id="userID" name="userID" value="<?php echo $_POST['userID'] ?>" hidden="hidden">
+            <input type="text" id="userIDChoice" name="userIDChoice" value="<?php echo $_POST['userIDChoice'] ?>" hidden="hidden">
+            <input type="text" id="username" name="username" value="<?php echo $_POST['username'] ?>" hidden="hidden">
+            <input type="text" id="usernameIDChoice" name="usernameIDChoice" value="<?php echo $_POST['usernameIDChoice'] ?>" hidden="hidden">
+            <input type="text" id="first_name" name="first_name" value="<?php echo $_POST['first_name'] ?>" hidden="hidden">
+            <input type="text" id="first_nameIDChoice" name="first_nameIDChoice" value="<?php echo $_POST['first_nameIDChoice'] ?>" hidden="hidden">
+            <input type="text" id="surname" name="surname" value="<?php echo $_POST['surname'] ?>" hidden="hidden">
+            <input type="text" id="surnameIDChoice" name="surnameIDChoice" value="<?php echo $_POST['surnameIDChoice'] ?>" hidden="hidden">
+            <input type="text" id="country" name="country" value="<?php echo $_POST['country'] ?>" hidden="hidden">
+            <input type="text" id="countryIDChoice" name="countryIDChoice" value="<?php echo $_POST['countryIDChoice'] ?>" hidden="hidden">
+            <input type="text" id="email" name="email" value="<?php echo $_POST['email'] ?>" hidden="hidden">
+            <input type="text" id="emailIDChoice" name="emailIDChoice" value="<?php echo $_POST['emailIDChoice'] ?>" hidden="hidden">
+            <input type="text" id="sortBy" name="sortBy" value="<?php echo $_POST['sortBy'] ?>" hidden="hidden">
+            <input type="text" id="order" name="order" value="<?php echo $_POST['order'] ?>" hidden="hidden">
+
+
+        <?php }?>
+
+        <input type="text" value="<?php echo $view->currentPageNo ?>" name="pageNo" id="pageNo" hidden="hidden"> <!--POSTs current page info, hidden to user-->
+        <input type="text" value="<?php echo $view->Calculate_pages->getTotalPages() ?>" id="lastPage" name="lastPage" hidden="hidden"> <!--POSTS total pages info, hidden to user-->
+    </form>
+    <p class="centerText">Page <?php echo $view->currentPageNo ?> of <?php echo $view->Calculate_pages->getTotalPages() ?></p>
+</div>

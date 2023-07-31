@@ -1,0 +1,66 @@
+<?php require_once("Template/header.phtml"); //Gets header
+require_once("Template/header_content.phtml");?>
+    <!-- Main content here -->
+
+<?php    if(isset($_SESSION['uID'])) { ?> <!--If user is logged in-->
+    <h1 class="first_msg">This page is for account creation. You are already logged in.</h1>
+<?php  }
+else {  ?> <!--Else, get details off users-->
+    <h2>Please fill in the bellow</h2>
+    <h3>Every field is required</h3>
+    <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" id="user_creation">
+        <p>Your username must only consist of numbers and letters</p>
+        <label for="new_username">Username:</label>
+        <input type="text" name="new_username" id="new_username" required="required" value="<?php if(isset($_POST['new_username'])) { //If there has already been a post request, re-enter text
+            echo $_POST['new_username']; } ?>" pattern="[0-9a-ZA-Z]+">
+        <?php if(isset($view->isUsernameTaken)) { //If there was a POST to create a new user, but username is already taken, display error message
+                if($view->isUsernameTaken == true) { ?>
+                    <h5>Username is already taken</h5>
+                    <?php }} ?>
+
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required="required">
+        <br>
+        <label for="password2">Confirm Password:</label>
+        <input type="password" name="password2" id="password2" required="required">
+        <br>
+        <?php if(isset($view->passMatch)) { //If passwords didn't match, display error message
+            if($view->passMatch == false) {?>
+                    <h3>The entered passwords didn't match</h3><br>
+                <?php }} ?>
+
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" id="first_name" required="required" value="<?php if(isset($_POST['first_name'])) {
+                                                                                                   echo $_POST['first_name']; } ?>">
+        <br>
+        <label for="surname">Surname:</label>
+        <input type="text" name="surname" id="surname" required="required" value="<?php if(isset($_POST['surname'])) {
+                                                                                            echo $_POST['surname']; } ?>">
+        <br>
+        <label for="birthday">Date of birth:</label>
+        <input type="date" name="birthday" id="birthday" required="required" min="1920-01-12" max="<?php echo date('Y\-m\-d') ?>" value="<?php if(isset($_POST['birthday'])) {
+                                                                                                                                    echo $_POST['birthday']; } ?>">
+        <br>
+        <p>Gender:<p>
+            <input type="radio" name="gender" id="Male" value="Male" required="required">
+            <label for="Male">Male</label><br>
+            <input type="radio" name="gender" id="Female" value="Female">
+            <label for="Female">Female</label><br>
+            <input type="radio" name="gender" id="Other" value="Other">
+            <label for="Other">Other</label>
+            <br>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required="required" value="<?php if(isset($_POST['email'])) {
+                                                                                         echo $_POST['email']; } ?>">
+        <br>
+        <label for="country">Country</label>
+        <input type="text" name="country" id="country" required="required" value="<?php if(isset($_POST['country'])) {
+                                                                                     echo $_POST['country']; } ?>">
+        <br>
+        <input type="submit" name="create_account" id="create_account" value="Create Account">
+    </form>
+<?php } ?>
+
+<?php require_once ("Template/footer.phtml");

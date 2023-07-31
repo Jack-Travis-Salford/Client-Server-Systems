@@ -1,0 +1,26 @@
+<!--Reusable code - Shows basic user info that matched SQL statement -->
+
+<div id="results_holder">
+<?php $x=0;
+foreach ($view->userDataSet as $userBasicData) {
+    $x++;?>
+    <div id="results<?php echo $x?>" class="results">
+
+        <img class="bui_img" src="<?php
+        $target_file='images/'.$userBasicData->getId().'.png'; //If user has sent an image, show image. Otherwise, user placeholder
+        if(file_exists($target_file)) {
+            echo $target_file;
+        }
+        else{
+            echo "images/Img-Placeholder.png";
+        }?>" width="100" height="100" alt="userImage.png"> <!--User image - Currently placeholder -->
+        <div class="bui_username_div"><h3 class="bui_username"><?php echo $userBasicData->getUsername()  ?></h3>
+       <h4 class="bui_name"><?php echo $userBasicData->getFirstName() ?>  <?php echo $userBasicData->getLastName() ?> </h4></div> <!--Displays user basic info-->
+        <div class="bui_form_div">
+        <form method="get" action="user.php" id="userSelect<?php echo $x?>"> <!-- Button that can be selected to get more info about user-->
+            <input type="submit" id="select<?php echo $x?>" name="select" value="select" class="bui_submit">
+            <input type="text" id="selectedID<?php echo $x?>" name="selectedID" value="<?php echo $userBasicData->getId() ?>" hidden="hidden"> <!-- Hidden text box containing displayed usersID. Required for target page -->
+        </form></div>
+    </div>
+<?php } ?>
+</div>
