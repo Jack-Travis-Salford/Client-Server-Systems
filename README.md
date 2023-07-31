@@ -11,7 +11,7 @@ The Mapbox api was used to display the map and added markers.
 
 Please note that database information and the Mapbox api key have been redacted from this upload.
 
-I am currently working on hosting this and my 1st year website. A link to it will be provided in this repo if/when that happens.
+This webpage is hosted <a href="http://locatefriends.jacktravis.net/"> here </a>
 
 Sample login information for one of the users:
 Username: cronnay0
